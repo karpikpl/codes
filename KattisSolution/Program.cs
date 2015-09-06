@@ -50,7 +50,6 @@ namespace KattisSolution
 
         private static int SolveCodes(ref int[,] matrix)
         {
-            // int[] code = new int[matrix.GetLength(0)];
             char[] stringToEncode = new char[matrix.GetLength(1)];
             int nonZeroMin = matrix.GetLength(0);
             int zeroCount = 0;
@@ -64,7 +63,6 @@ namespace KattisSolution
                     stringToEncode[s] -= '0';
                 }
 
-                //Debug.WriteLine(stringToEncode.Select(c => c.ToString()).Aggregate((a, b) => a + b));
                 int sum = MultiplyMatrix(ref matrix, ref stringToEncode, nonZeroMin);
 
                 if (sum == 0)
@@ -87,18 +85,14 @@ namespace KattisSolution
             Debug.Assert(a.GetLength(1) == b.GetLength(0), "Number of columns in First Matrix should be equal to Number of rows in Second Matrix.");
 
             int sum = 0, c;
-            //c = new int[a.GetLength(0), b.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
             {
                 c = 0;
                 for (int k = 0; k < a.GetLength(1); k++)
                 {
-                    //                    if (a[i, k] != 0 && b[k] != 0)
-                    //                        c[i] = (c[i] + a[i, k] * b[k]) % 2;
                     if (a[i, k] == 1 && b[k] == 1)
                     {
                         c = (c + 1) % 2;
-
                     }
                 }
                 sum += c;
