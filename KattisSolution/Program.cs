@@ -50,7 +50,7 @@ namespace KattisSolution
 
         private static int SolveCodes(ref int[,] matrix)
         {
-            int[] code = new int[matrix.GetLength(0)];
+            // int[] code = new int[matrix.GetLength(0)];
             char[] stringToEncode = new char[matrix.GetLength(1)];
             int nonZeroMin = matrix.GetLength(0);
             int zeroCount = 0;
@@ -59,10 +59,13 @@ namespace KattisSolution
             for (int i = 0; i < stringsCount; i++)
             {
                 Convert.ToString(i, 2).PadLeft(matrix.GetLength(1), '0').CopyTo(0, stringToEncode, 0, stringToEncode.Length);
-                //Debug.WriteLine(stringToEncode.Select(c => c.ToString()).Aggregate((a, b) => a + b));
-                MultiplyMatrix(ref matrix, ref stringToEncode, ref code);
+                for (int s = 0; s < stringToEncode.Length; s++)
+                {
+                    stringToEncode[s] -= '0';
+                }
 
-                int sum = code.Sum();
+                //Debug.WriteLine(stringToEncode.Select(c => c.ToString()).Aggregate((a, b) => a + b));
+                int sum = MultiplyMatrix(ref matrix, ref stringToEncode, nonZeroMin);
 
                 if (sum == 0)
                 {
@@ -79,25 +82,31 @@ namespace KattisSolution
             return zeroCount > 1 ? 0 : nonZeroMin;
         }
 
-        public static void MultiplyMatrix(ref int[,] a, ref char[] b, ref int[] c)
+        public static int MultiplyMatrix(ref int[,] a, ref char[] b, int currentMin)
         {
-            if (a.GetLength(1) == b.GetLength(0))
+            Debug.Assert(a.GetLength(1) == b.GetLength(0), "Number of columns in First Matrix should be equal to Number of rows in Second Matrix.");
+
+            int sum = 0, c;
+            //c = new int[a.GetLength(0), b.GetLength(1)];
+            for (int i = 0; i < a.GetLength(0); i++)
             {
-                //c = new int[a.GetLength(0), b.GetLength(1)];
-                for (int i = 0; i < c.GetLength(0); i++)
+                c = 0;
+                for (int k = 0; k < a.GetLength(1); k++)
                 {
-                    c[i] = 0;
-                    for (int k = 0; k < a.GetLength(1); k++) // OR k<b.GetLength(0)
+                    //                    if (a[i, k] != 0 && b[k] != 0)
+                    //                        c[i] = (c[i] + a[i, k] * b[k]) % 2;
+                    if (a[i, k] == 1 && b[k] == 1)
                     {
-                        if (a[i, k] != 0 && b[k] != 0)
-                            c[i] = (c[i] + a[i, k] * b[k]) % 2;
+                        c = (c + 1) % 2;
+
                     }
                 }
+                sum += c;
+                if (sum > currentMin)
+                    return sum;
             }
-            else
-            {
-                throw new InvalidOperationException("Number of columns in First Matrix should be equal to Number of rows in Second Matrix.");
-            }
+
+            return sum;
         }
     }
 }
