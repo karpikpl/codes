@@ -1,1 +1,1 @@
-python submit.py -p=%1 KattisSolution\Program.cs KattisSolution\InputOutput.cs 
+python submit.py -pcodes KattisSolution\Program.cs KattisSolution\InputOutput.cs
