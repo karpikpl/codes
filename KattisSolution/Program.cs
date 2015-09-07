@@ -17,7 +17,7 @@ namespace KattisSolution
             Solve(Console.OpenStandardInput(), Console.OpenStandardOutput());
         }
 
-        public unsafe static void Solve(Stream stdin, Stream stdout)
+        public static void Solve(Stream stdin, Stream stdout)
         {
             IScanner scanner = new OptimizedIntReader(stdin);
             BufferedStdoutWriter writer = new BufferedStdoutWriter(stdout);
@@ -34,25 +34,22 @@ namespace KattisSolution
                 _matrix = new int[_n, _k];
                 _stringToEncode = new char[_k];
 
-                fixed (int* intPtrMatrixFixed = _matrix)
-                fixed (char* charPtrStringToEncode = _stringToEncode)
-                {
-                    for (int i = 0; i < _k * _n; i++)
+                for (int i = 0; i < _n; i++)
+                    for (int j = 0; j < _k; j++)
                     {
-                        intPtrMatrixFixed[i] = scanner.NextInt();
+                        _matrix[i, j] = scanner.NextInt();
                     }
 
-                    int result = SolveCodes(intPtrMatrixFixed, charPtrStringToEncode);
-                    writer.Write(result);
-                    writer.Write("\n");
-                }
+                int result = SolveCodes();
+                writer.Write(result);
+                writer.Write("\n");
             }
 
             writer.Flush();
         }
 
 
-        private unsafe static int SolveCodes(int* fixedMatrixPtr, char* fixedStringPtr)
+        private static int SolveCodes()
         {
             int nonZeroMin = _n;
             int zeroCount = 0;
@@ -62,7 +59,7 @@ namespace KattisSolution
             {
                 Convert.ToString(i, 2).PadLeft(_k, '0').CopyTo(0, _stringToEncode, 0, _k);
 
-                int sum = MultiplyMatrix(fixedMatrixPtr, fixedStringPtr, nonZeroMin);
+                int sum = MultiplyMatrix(nonZeroMin);
 
                 if (sum == 0)
                 {
@@ -79,28 +76,22 @@ namespace KattisSolution
             return zeroCount > 1 ? 0 : nonZeroMin;
         }
 
-        public unsafe static int MultiplyMatrix(int* fixedMatrixPtr, char* fixedStringPtr, int currentMin)
+        public static int MultiplyMatrix(int currentMin)
         {
             Debug.Assert(_matrix.GetLength(1) == _stringToEncode.GetLength(0), "Number of columns in First Matrix should be equal to Number of rows in Second Matrix.");
 
             int sum = 0, c;
-            int* mPtr = fixedMatrixPtr;
-            char* bPtr = fixedStringPtr;
 
             for (int i = 0; i < _n; i++)
             {
                 c = 0;
                 for (int j = 0; j < _k; j++)
                 {
-                    if (*mPtr == 1 && *bPtr == '1')
+                    if (_matrix[i, j] == 1 && _stringToEncode[j] == '1')
                     {
                         c = (c + 1) % 2;
                     }
-
-                    mPtr++;
-                    bPtr++;
                 }
-                bPtr = fixedStringPtr;
 
                 sum += c;
                 if (sum > currentMin)
